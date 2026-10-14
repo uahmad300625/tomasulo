@@ -1,0 +1,37 @@
+Data structures (code/init.py)
+
+>> Instruction buffer --> list of Instruction
+op | dest | src1 | src2 | imm | text
+
+>> Config (read from the input file)
+rs / ex / fus per unit | mem_cycles | rob_size | issue_width | num_cdb | initial regs / memory
+
+>> RATs (rat_int, rat_fp) --> list of 32
+None (value is in the architectural register file) or the ROB entry that will write the register
+
+>> Reservation station (int adder, FP adder, FP multiplier) --> list of RSEntry
+busy | op | op1 (Operand) | op2 (Operand) | entry (destination ROB entry)
+
+>> Operand
+value | wait (ROB entry whose result it waits for) | ready (first cycle the value may be used)
+
+>> Functional unit --> FU
+kind | latency | pipelined | busy_until | last_start
+(int adder and load/store address adder unpipelined, FP adder / FP multiplier pipelined)
+
+>> In-flight operations --> list of InFlight
+entry | end (last EX cycle) | kind (alu / branch / addr) | value | lsq
+
+>> Ld/Sd queue --> list of LSQEntry, program order
+entry | op | base (Operand) | imm | data (Operand, stores) | address | addr_ready | mem_started | done_at
+
+>> Results buffer (waiting for the CDB) --> list of Result
+entry | value | ready (first cycle it may use the CDB)
+
+>> ROB --> FIFO queue of ROBEntry
+tag | seq | pc | ins | dest | value | producers |
+issue | ex_start | ex_end | mem_start | mem_end | wb | commit |
+pred_taken | pred_next | actual_next | mispredicted | lsq | forwarded | squashed
+
+>> BTB --> 8 x BTBEntry, indexed by (word address of the branch) & 7
+valid | taken (1-bit predictor) | target
